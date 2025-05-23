@@ -21,11 +21,18 @@ app.include_router(users_router)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("")
+
+
 @app.middleware("http")
 async def test_middleware(request: Request, call_next) -> Response:
     x_custom_header = request.headers.get("X-Custom-Header")
     if not x_custom_header:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Заголовок 'X-Custom Header' є обов'язковим")
+    response: Response = await call_next(request)
+
+
+    return response
+    
 
 @app.get("/message/")
 async def test_message():
